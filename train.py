@@ -6,6 +6,7 @@ import torch
 import random
 import argparse
 import numpy as np
+import datetime
 
 from torch.utils import data
 from tqdm import tqdm
@@ -207,7 +208,7 @@ if __name__ == "__main__":
         "--config",
         nargs="?",
         type=str,
-        default="configs/fcn8s_pascal.yml",
+        default="configs/unet_larynx.yml",
         help="Configuration file to use",
     )
 
@@ -216,14 +217,15 @@ if __name__ == "__main__":
     with open(args.config) as fp:
         cfg = yaml.load(fp)
 
-    run_id = random.randint(1, 100000)
-    logdir = os.path.join("runs", os.path.basename(args.config)[:-4], str(run_id))
+    run_id = datetime.datetime.now().strftime("%m%d_%H%M")
+    logdir = os.path.join("saves", run_id)
+    shutil.copy2(args.config, logdir)
     writer = SummaryWriter(log_dir=logdir)
 
     print("RUNDIR: {}".format(logdir))
     shutil.copy(args.config, logdir)
 
     logger = get_logger(logdir)
-    logger.info("Let the games begin")
+    logger.info("Starting run...")
 
     train(cfg, writer, logger)

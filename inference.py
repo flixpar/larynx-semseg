@@ -3,19 +3,11 @@ import torch
 import argparse
 import numpy as np
 import scipy.misc as misc
-
+import pydensecrf.densecrf as dcrf
 
 from ptsemseg.models import get_model
 from ptsemseg.loader import get_loader, get_data_path
 from ptsemseg.utils import convert_state_dict
-
-try:
-    import pydensecrf.densecrf as dcrf
-except:
-    print(
-        "Failed to import pydensecrf,\
-           CRF post-processing will not work"
-    )
 
 
 def test(args):
@@ -104,15 +96,15 @@ if __name__ == "__main__":
         "--model_path",
         nargs="?",
         type=str,
-        default="fcn8s_pascal_1_26.pkl",
+        default="unet_larynx.pkl",
         help="Path to the saved model",
     )
     parser.add_argument(
         "--dataset",
         nargs="?",
         type=str,
-        default="pascal",
-        help="Dataset to use ['pascal, camvid, ade20k etc']",
+        default="larynx",
+        help="Dataset to use ['larynx']",
     )
 
     parser.add_argument(

@@ -1,0 +1,35 @@
+model:
+    arch: unet
+data:
+    dataset: larynx
+    train_split: train
+    val_split: val
+    img_cols: 640
+    img_rows: 480
+training:
+    train_iters: 50000
+    batch_size: 32
+    val_interval: 250
+    n_workers: 12
+    print_interval: 100
+    optimizer:
+        name: 'adam'
+        lr: 8e-4
+        weight_decay: 5e-3
+    loss:
+        name: 'cross_entropy'
+        size_average: True
+        weight: [0.05, 1.0, 1.0]
+    lr_schedule:
+        name: 'cosine_annealing'
+        T_max: 700
+    augmentations:
+        gamma: 0.25
+        hue: 0.25
+        brightness: 0.20
+        saturation: 0.25
+        contrast: 0.25
+        hflip: 0.5
+        translate: [50, 50]
+        rotate: 30
+    resume: None
