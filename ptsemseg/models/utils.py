@@ -812,3 +812,17 @@ def get_upsampling_weight(in_channels, out_channels, kernel_size):
     weight = np.zeros((in_channels, out_channels, kernel_size, kernel_size), dtype=np.float64)
     weight[range(in_channels), range(out_channels), :, :] = filt
     return torch.from_numpy(weight).float()
+
+def initialize_weights(*models):
+    for model in models:
+        for module in model.modules():
+            if isinstance(module, nn.Conv2d) or isinstance(module, nn.Linear):
+                nn.init.kaiming_normal_(module.weight)
+                if module.bias is not None:
+                    module.bias.data.zero_()
+            elif isinstance(module, nn.BatchNorm2d):
+                module.weight.data.fill_(1)
+                module.bias.data.zero_()
+            elif isinstance(module, nn.ConvTranspose2d):
+                w = get_upsampling_weight(module.in_channels, module.out_channels, module.kernel_size[0])
+                module.weight.data.copy_(w)

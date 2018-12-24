@@ -1,6 +1,6 @@
 import torch.nn as nn
 
-from ptsemseg.models.utils import unetConv2, unetUp
+from ptsemseg.models.utils import unetConv2, unetUp, initialize_weights
 
 
 class unet(nn.Module):
@@ -39,6 +39,9 @@ class unet(nn.Module):
 
         # final conv (without any concat)
         self.final = nn.Conv2d(filters[0], n_classes, 1)
+
+        # initialize all weights
+        initialize_weights(self)
 
     def forward(self, inputs):
         conv1 = self.conv1(inputs)
