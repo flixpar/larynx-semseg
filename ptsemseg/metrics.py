@@ -132,8 +132,11 @@ def mean_metric_table(m, metrics):
     table = []
     for metric_name in metrics:
         table.append([metric_name, str(m[metric_name])])
-    table = SingleTable(table, title="Metrics", inner_heading_row_border=False, inner_column_border=True, outer_border=True)
-    return table.table()
+    table = SingleTable(table, title="Metrics")
+    table.inner_heading_row_border = False
+    table.inner_column_border = True
+    table.outer_border = True
+    return table.table
 
 def mean_square_metric_table(m, metrics):
     if len(metrics) != 4: raise Exception("Invalid number of metrics for table.")
@@ -142,20 +145,24 @@ def mean_square_metric_table(m, metrics):
     s3 = "\033[1m" + metrics[2] + "\033[0m\n" + str(m[metrics[2]])
     s4 = "\033[1m" + metrics[3] + "\033[0m\n" + str(m[metrics[3]])
     table = [[s1, s2], [s3, s4]]
-    table = SingleTable(table, inner_column_border=True, outer_border=True)
-    return table.table()
+    table = SingleTable(table)
+    table.inner_column_border = True
+    table.outer_border = True
+    return table.table
 
 def perclass_metric_table(m, metrics, classes):
     table = []
     table.append(["metric"] + classes)
     for metric_name in metrics:
         table.append([metric_name] + [str(s) for s in m[metric_name]])
-    table = SingleTable(table, title="Metrics", inner_heading_row_border=True, inner_column_border=True, outer_border=True)
-    return table.table()
+    table = SingleTable(table, title="Metrics")
+    table.inner_heading_row_border = True
+    table.inner_column_border = True
+    table.outer_border = True
+    return table.table
 
 def perclass_square_metric_table(m, metrics, classes):
     if len(metrics) != 4: raise Exception("Invalid number of metrics for table.")
-
     s = ""
     for c, class_name in enumerate(classes):
         s1 = "\033[1m" + metrics[0] + "\033[0m\n" + str(m[metrics[0]][c])
@@ -163,18 +170,21 @@ def perclass_square_metric_table(m, metrics, classes):
         s3 = "\033[1m" + metrics[2] + "\033[0m\n" + str(m[metrics[2]][c])
         s4 = "\033[1m" + metrics[3] + "\033[0m\n" + str(m[metrics[3]][c])
         table = [[s1, s2], [s3, s4]]
-        table = SingleTable(table, title=class_name, inner_column_border=True, outer_border=True)
-        s += table.table()
+        table = SingleTable(table, title=class_name)
+        table.inner_column_border = True
+        table.outer_border = True
+        s += table.table
         s += "\n"
-
     return s
 
 def cfm_table(m, normalized=True):
     if normalized: cfm = m["normalized_cfm"]
     else: cfm = m["cfm"]
     table = list(cfm)
-    table = SingleTable(table, title="CFM", inner_column_border=True, outer_border=True)
-    return table.table()
+    table = SingleTable(table, title="CFM")
+    table.inner_column_border = True
+    table.outer_border = True
+    return table.table
 
 def make_plot(x, y, path, title=None, ylabel=None, xlabel=None):
     plt.clf()
