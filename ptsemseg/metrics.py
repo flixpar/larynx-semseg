@@ -74,7 +74,7 @@ def compute_metrics(y_true, y_score, num_classes=3):
     cfm          = sklearn.metrics.confusion_matrix(y_true, y_pred, labels=labels)
     jaccard      = sklearn.metrics.jaccard_similarity_score(y_true, y_pred)
     f1           = sklearn.metrics.f1_score(y_true, y_pred, labels=labels, average=None)
-    ce           = sklearn.metrics.log_loss(y_true, y_score[y_pred], labels=labels)
+    # ce           = sklearn.metrics.log_loss(y_true, y_score[y_pred], labels=labels)
 
     normalized_cfm = cfm.astype(np.float32) / cfm.sum(axis=1)[:, np.newaxis]
 
@@ -93,7 +93,7 @@ def compute_metrics(y_true, y_score, num_classes=3):
         "miou": miou,
         "foreground_miou": fiou,
         "f1": f1,
-        "cross_entropy": ce,
+        # "cross_entropy": ce,
         "cfm": cfm,
         "normalized_cfm": normalized_cfm,
         "pr_curve": [None] * num_classes,
