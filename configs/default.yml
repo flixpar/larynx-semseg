@@ -19,7 +19,7 @@ training:
         weight_decay: 5.0e-3
     loss:
         name: "cross_entropy"
-        reduce: "mean"
+        reduction: "mean"
         weight: [0.05, 1.0, 1.0]
     lr_schedule:
         name: "cosine_annealing"

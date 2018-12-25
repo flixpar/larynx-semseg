@@ -206,7 +206,7 @@ def train(cfg, writer, logger):
                 logger.info(metric_table)
 
                 if metrics["foreground_miou"] >= best_iou:
-                    best_iou = score["foreground_miou"]
+                    best_iou = metrics["foreground_miou"]
                     state = {
                         "epoch": i + 1,
                         "model_state": model.state_dict(),
