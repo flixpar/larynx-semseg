@@ -208,7 +208,7 @@ def train(cfg, writer, logger):
                 logger.info(metric_table)
 
                 print()
-                logger.info()
+                logger.info("")
 
                 if metrics["foreground_miou"] >= best_iou:
                     best_iou = metrics["foreground_miou"]

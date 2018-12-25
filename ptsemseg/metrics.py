@@ -135,6 +135,7 @@ def mean_metric_table(m, metrics):
     table = SingleTable(table, title="Metrics")
     table.inner_heading_row_border = False
     table.inner_column_border = True
+    table.inner_row_border = False
     table.outer_border = True
     return table.table
 
@@ -148,6 +149,7 @@ def mean_square_metric_table(m, metrics):
     table = SingleTable(table)
     table.inner_heading_row_border = False
     table.inner_column_border = True
+    table.inner_row_border = True
     table.outer_border = True
     return table.table
 
@@ -159,6 +161,7 @@ def perclass_metric_table(m, metrics, classes):
     table = SingleTable(table, title="Metrics")
     table.inner_heading_row_border = True
     table.inner_column_border = True
+    table.inner_row_border = False
     table.outer_border = True
     return table.table
 
@@ -174,6 +177,7 @@ def perclass_square_metric_table(m, metrics, classes):
         table = SingleTable(table, title=class_name)
         table.inner_heading_row_border = False
         table.inner_column_border = True
+        table.inner_row_border = True
         table.outer_border = True
         s += table.table
         if c != len(classes)-1: s += "\n"
@@ -185,8 +189,8 @@ def cfm_table(m, normalized=True):
     table = list(cfm)
     table = SingleTable(table, title="CFM")
     table.inner_heading_row_border = False
-    table.inner_column_border = True
-    table.inner_row_border = True
+    table.inner_column_border = False
+    table.inner_row_border = False
     table.outer_border = True
     return table.table
 
