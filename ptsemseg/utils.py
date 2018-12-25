@@ -47,11 +47,15 @@ def convert_state_dict(state_dict):
 
 def get_logger(logdir):
     logging.basicConfig(
-        filename=os.path.join(logdir, "info.log"),
-        filemode="a+",
         format="%(asctime)s %(levelname)s %(message)s",
         datefmt="%H:%M:%S",
         level=logging.INFO
     )
     logger = logging.getLogger("ptsemseg")
+    logger.propagate = False
+    handler = logging.FileHandler(os.path.join(logdir, "info.log"))
+    formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
     return logger
