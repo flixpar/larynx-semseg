@@ -176,7 +176,7 @@ def perclass_square_metric_table(m, metrics, classes):
         table.inner_column_border = True
         table.outer_border = True
         s += table.table
-        s += "\n"
+        if c != len(classes)-1: s += "\n"
     return s
 
 def cfm_table(m, normalized=True):

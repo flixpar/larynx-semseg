@@ -48,7 +48,7 @@ def convert_state_dict(state_dict):
 def get_logger(logdir):
     logging.basicConfig(
         filename=os.path.join(logdir, "info.log"),
-        filemode="a",
+        filemode="a+",
         format="%(asctime)s %(levelname)s %(message)s",
         datefmt="%H:%M:%S",
         level=logging.INFO

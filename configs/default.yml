@@ -8,11 +8,11 @@ data:
     img_rows: 480
     path: None
 training:
-    train_iters: 5000
+    train_iters: 30000
     batch_size: 32
-    val_interval: 25
+    val_interval: 250
     n_workers: 32
-    print_interval: 10
+    print_interval: 100
     optimizer:
         name: "adam"
         lr: 8.0e-4
@@ -23,7 +23,7 @@ training:
         weight: [0.05, 1.0, 1.0]
     lr_schedule:
         name: "cosine_annealing"
-        T_max: 700
+        T_max: 1500
     augmentations:
         gamma: 0.25
         hue: 0.25

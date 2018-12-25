@@ -153,6 +153,8 @@ def train(cfg, writer, logger):
                 time_meter.reset()
 
             if (i + 1) % cfg["training"]["val_interval"] == 0 or (i + 1) == cfg["training"]["train_iters"]:
+                print("\n## Eval ##")
+                logger.info("\n## Eval ##")
                 model.eval()
                 val_pred, val_true = [], []
 
@@ -205,6 +207,9 @@ def train(cfg, writer, logger):
                 print(metric_table)
                 logger.info(metric_table)
 
+                print()
+                logger.info()
+
                 if metrics["foreground_miou"] >= best_iou:
                     best_iou = metrics["foreground_miou"]
                     state = {
@@ -245,6 +250,8 @@ if __name__ == "__main__":
 
     if os.path.exists(logdir):
         raise Exception("log dir already exists")
+    if not os.path.exists("./saves"):
+        os.mkdir("./saves")
 
     writer = SummaryWriter(log_dir=logdir)
 
