@@ -15,10 +15,14 @@ from ptsemseg.models import get_model
 from ptsemseg.loss import get_loss_function
 from ptsemseg.loader import get_loader
 from ptsemseg.utils import get_logger
-from ptsemseg.metrics import runningScore, averageMeter
 from ptsemseg.augmentations import get_composed_augmentations
 from ptsemseg.schedulers import get_scheduler
 from ptsemseg.optimizers import get_optimizer
+
+from ptsemseg.metrics import runningScore, averageMeter, compute_metrics
+from ptsemseg.metrics import mean_metric_table, mean_square_metric_table
+from ptsemseg.metrics import perclass_metric_table, perclass_square_metric_table
+from ptsemseg.metrics import cfm_table, make_plot
 
 from tensorboardX import SummaryWriter
 
@@ -148,10 +152,10 @@ def train(cfg, writer, logger):
                 writer.add_scalar("loss/train_loss", loss.item(), i + 1)
                 time_meter.reset()
 
-            if (i + 1) % cfg["training"]["val_interval"] == 0 or (i + 1) == cfg["training"][
-                "train_iters"
-            ]:
+            if (i + 1) % cfg["training"]["val_interval"] == 0 or (i + 1) == cfg["training"]["train_iters"]:
                 model.eval()
+                val_pred, val_true = [], []
+
                 with torch.no_grad():
                     for i_val, (images_val, labels_val) in tqdm(enumerate(valloader)):
                         images_val = images_val.to(device)
@@ -165,6 +169,9 @@ def train(cfg, writer, logger):
 
                         running_metrics_val.update(gt, pred)
                         val_loss_meter.update(val_loss.item())
+
+                        val_pred.extend(outputs.cpu().numpy().tolist())
+                        val_true.extend(gt.tolist())
 
                 writer.add_scalar("loss/val_loss", val_loss_meter.avg, i + 1)
                 logger.info("Iter %d Loss: %.4f" % (i + 1, val_loss_meter.avg))
@@ -182,8 +189,24 @@ def train(cfg, writer, logger):
                 val_loss_meter.reset()
                 running_metrics_val.reset()
 
-                if score["Mean IoU : \t"] >= best_iou:
-                    best_iou = score["Mean IoU : \t"]
+                val_pred, val_true = np.asarray(val_pred), np.asarray(val_true)
+                metrics = compute_metrics(val_true, val_pred, num_classes=valloader.dataset.n_classes)
+
+                class_names = valloader.dataset.class_names
+                metric_table_names = ["iou", "precision", "recall", "dice_score", "f1"]
+                metric_table = perclass_metric_table(metrics, metric_table_names, class_names)
+                print(metric_table)
+                logger.info(metric_table)
+                metric_table_names = ["tpr", "fpr", "fnr", "tnr"]
+                metric_table = perclass_square_metric_table(metrics, metric_table_names, class_names)
+                print(metric_table)
+                logger.info(metric_table)
+                metric_table = cfm_table(metrics, normalized=True)
+                print(metric_table)
+                logger.info(metric_table)
+
+                if metrics["foreground_miou"] >= best_iou:
+                    best_iou = score["foreground_miou"]
                     state = {
                         "epoch": i + 1,
                         "model_state": model.state_dict(),
@@ -193,7 +216,7 @@ def train(cfg, writer, logger):
                     }
                     save_path = os.path.join(
                         writer.file_writer.get_logdir(),
-                        "{}_{}_best_model.pkl".format(cfg["model"]["arch"], cfg["data"]["dataset"]),
+                        "model_{:03d}.pth".format(i+1),
                     )
                     torch.save(state, save_path)
 
@@ -208,7 +231,7 @@ if __name__ == "__main__":
         "--config",
         nargs="?",
         type=str,
-        default="configs/unet_larynx.yml",
+        default="configs/default.yml",
         help="Configuration file to use",
     )
 
