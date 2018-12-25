@@ -2,7 +2,7 @@ import torch
 import torch.nn.functional as F
 
 
-def cross_entropy2d(input, target, weight=None, reduce="mean"):
+def cross_entropy2d(input, target, weight=None, reduction="mean"):
     n, c, h, w = input.size()
     nt, ht, wt = target.size()
 
@@ -14,14 +14,14 @@ def cross_entropy2d(input, target, weight=None, reduce="mean"):
     input = input.transpose(1, 2).transpose(2, 3).contiguous().view(-1, c)
     target = target.view(-1)
     loss = F.cross_entropy(
-        input, target, weight=weight, reduce=reduce, ignore_index=250
+        input, target, weight=weight, reduction=reduction, ignore_index=250
     )
     return loss
 
 
-def multi_scale_cross_entropy2d(input, target, weight=None, reduce="mean", scale_weight=None):
+def multi_scale_cross_entropy2d(input, target, weight=None, reduction="mean", scale_weight=None):
     if not isinstance(input, tuple):
-        return cross_entropy2d(input=input, target=target, weight=weight, reduce=reduce)
+        return cross_entropy2d(input=input, target=target, weight=weight, reduction=reduction)
 
     # Auxiliary training for PSPNet [1.0, 0.4] and ICNet [1.0, 0.4, 0.16]
     if scale_weight is None:  # scale_weight: torch tensor type
@@ -35,24 +35,24 @@ def multi_scale_cross_entropy2d(input, target, weight=None, reduce="mean", scale
     loss = 0.0
     for i, inp in enumerate(input):
         loss = loss + scale_weight[i] * cross_entropy2d(
-            input=inp, target=target, weight=weight, reduce=reduce
+            input=inp, target=target, weight=weight, reduction=reduction
         )
 
     return loss
 
 
-def bootstrapped_cross_entropy2d(input, target, K, weight=None, reduce="mean"):
+def bootstrapped_cross_entropy2d(input, target, K, weight=None, reduction="mean"):
 
     batch_size = input.size()[0]
     if weight is not None: weight = torch.tensor(weight, device=input.device)
 
-    def _bootstrap_xentropy_single(input, target, K, weight=None, size_average=True):
+    def _bootstrap_xentropy_single(input, target, K, weight=None, reduction="mean"):
 
         n, c, h, w = input.size()
         input = input.transpose(1, 2).transpose(2, 3).contiguous().view(-1, c)
         target = target.view(-1)
         loss = F.cross_entropy(
-            input, target, weight=weight, reduce=False, reduce=reduce, ignore_index=250
+            input, target, weight=weight, reduction=reduction, ignore_index=250
         )
 
         topk_loss, _ = loss.topk(K)
@@ -68,6 +68,6 @@ def bootstrapped_cross_entropy2d(input, target, K, weight=None, reduce="mean"):
             target=torch.unsqueeze(target[i], 0),
             K=K,
             weight=weight,
-            reduce=reduce,
+            reduction=reduction,
         )
     return loss / float(batch_size)
