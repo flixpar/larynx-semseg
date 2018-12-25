@@ -11,7 +11,7 @@ from ptsemseg.augmentations import *
 
 class larynxLoader(data.Dataset):
 
-	def __init__(self, split="train", is_transform=False, img_size=(480, 640), augmentations=None, img_norm=True):
+	def __init__(self, root, split="train", is_transform=False, img_size=(480, 640), augmentations=None, img_norm=True):
 		"""__init__
 		:param root:
 		:param split:
@@ -26,7 +26,7 @@ class larynxLoader(data.Dataset):
 		self.augmentations = augmentations
 		self.img_norm = img_norm
 		self.n_classes = 3
-		self.img_size = img_size if isinstance(img_size, tuple) or isinstance(img_size, list) else (img_size, img_size)
+		self.img_size = img_size if isinstance(img_size, (tuple, list)) else (img_size, img_size)
 		self.mean = np.array([103.939, 116.779, 123.68])
 		self.ignore_index = 250
 		self.files = {}
@@ -41,6 +41,7 @@ class larynxLoader(data.Dataset):
 			[  0,   0, 255],
 		]
 		self.label_colours = dict(zip(range(self.n_classes), self.colors))
+		self.class_names = ["background", "granuloma", "ulcerations"]
 
 		self.images_base = os.path.join(self.root, self.split, "images")
 		self.annotations_base = os.path.join(self.root, self.split, "annotations")
@@ -87,7 +88,8 @@ class larynxLoader(data.Dataset):
 
 		img = img.astype(np.float64)
 		img -= self.mean
-		img = img / 255.0
+		if self.img_norm:
+			img = img / 255.0
 		img = img.transpose(2, 0, 1) # NHWC -> NCHW
 
 		classes = np.unique(lbl)
@@ -121,7 +123,8 @@ class larynxLoader(data.Dataset):
 	def decode_image(self, img):
 		img = img.transpose(1, 2, 0) # NHWC -> NCHW
 		img = img.astype(np.float64)
-		img = img * 255.0
+		if self.img_norm:
+			img = img * 255.0
 		img += self.mean
 		img = img.astype(np.uint8)
 		return img
