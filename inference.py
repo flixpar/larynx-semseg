@@ -96,7 +96,7 @@ if __name__ == "__main__":
         "--model_path",
         nargs="?",
         type=str,
-        default="unet_larynx.pkl",
+        default="default.pth",
         help="Path to the saved model",
     )
     parser.add_argument(

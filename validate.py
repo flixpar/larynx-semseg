@@ -72,14 +72,14 @@ if __name__ == "__main__":
         "--config",
         nargs="?",
         type=str,
-        default="configs/unet_larynx.yml",
+        default="configs/default.yml",
         help="Config file to be used",
     )
     parser.add_argument(
         "--model_path",
         nargs="?",
         type=str,
-        default="unet_larynx.pkl",
+        default="default.pth",
         help="Path to the saved model",
     )
 
