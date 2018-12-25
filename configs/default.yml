@@ -15,8 +15,8 @@ training:
     print_interval: 100
     optimizer:
         name: "adam"
-        lr: 8e-4
-        weight_decay: 5e-3
+        lr: 8.0e-4
+        weight_decay: 5.0e-3
     loss:
         name: "cross_entropy"
         size_average: True

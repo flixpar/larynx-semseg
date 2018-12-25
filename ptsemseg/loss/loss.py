@@ -10,6 +10,7 @@ def cross_entropy2d(input, target, weight=None, size_average=True):
     if h != ht and w != wt:  # upsample labels
         input = F.interpolate(input, size=(ht, wt), mode="bilinear", align_corners=True)
 
+    if weight is not None: weight = torch.tensor(weight, device=input.device)
     input = input.transpose(1, 2).transpose(2, 3).contiguous().view(-1, c)
     target = target.view(-1)
     loss = F.cross_entropy(
@@ -30,6 +31,7 @@ def multi_scale_cross_entropy2d(input, target, weight=None, size_average=True, s
             input.device
         )
 
+    if weight is not None: weight = torch.tensor(weight, device=input.device)
     loss = 0.0
     for i, inp in enumerate(input):
         loss = loss + scale_weight[i] * cross_entropy2d(
@@ -42,6 +44,7 @@ def multi_scale_cross_entropy2d(input, target, weight=None, size_average=True, s
 def bootstrapped_cross_entropy2d(input, target, K, weight=None, size_average=True):
 
     batch_size = input.size()[0]
+    if weight is not None: weight = torch.tensor(weight, device=input.device)
 
     def _bootstrap_xentropy_single(input, target, K, weight=None, size_average=True):
 

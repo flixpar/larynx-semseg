@@ -242,11 +242,10 @@ if __name__ == "__main__":
 
     run_id = datetime.datetime.now().strftime("%m%d_%H%M")
     logdir = os.path.join("saves", run_id)
-    shutil.copy2(args.config, logdir)
     writer = SummaryWriter(log_dir=logdir)
 
     print("RUNDIR: {}".format(logdir))
-    shutil.copy(args.config, logdir)
+    shutil.copy2(args.config, logdir)
 
     logger = get_logger(logdir)
     logger.info("Starting run...")

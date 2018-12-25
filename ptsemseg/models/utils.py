@@ -173,14 +173,14 @@ class unetConv2(nn.Module):
 
         if is_batchnorm:
             self.conv1 = nn.Sequential(
-                nn.Conv2d(in_size, out_size, 3, 1, 0), nn.BatchNorm2d(out_size), nn.ReLU()
+                nn.Conv2d(in_size, out_size, 3, 1, 1), nn.BatchNorm2d(out_size), nn.ReLU()
             )
             self.conv2 = nn.Sequential(
-                nn.Conv2d(out_size, out_size, 3, 1, 0), nn.BatchNorm2d(out_size), nn.ReLU()
+                nn.Conv2d(out_size, out_size, 3, 1, 1), nn.BatchNorm2d(out_size), nn.ReLU()
             )
         else:
-            self.conv1 = nn.Sequential(nn.Conv2d(in_size, out_size, 3, 1, 0), nn.ReLU())
-            self.conv2 = nn.Sequential(nn.Conv2d(out_size, out_size, 3, 1, 0), nn.ReLU())
+            self.conv1 = nn.Sequential(nn.Conv2d(in_size, out_size, 3, 1, 1), nn.ReLU())
+            self.conv2 = nn.Sequential(nn.Conv2d(out_size, out_size, 3, 1, 1), nn.ReLU())
 
     def forward(self, inputs):
         outputs = self.conv1(inputs)
@@ -810,7 +810,7 @@ def get_upsampling_weight(in_channels, out_channels, kernel_size):
     og = np.ogrid[:kernel_size, :kernel_size]
     filt = (1 - abs(og[0] - center) / factor) * (1 - abs(og[1] - center) / factor)
     weight = np.zeros((in_channels, out_channels, kernel_size, kernel_size), dtype=np.float64)
-    weight[range(in_channels), range(out_channels), :, :] = filt
+    weight[:,:] = filt
     return torch.from_numpy(weight).float()
 
 def initialize_weights(*models):
