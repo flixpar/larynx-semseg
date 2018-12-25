@@ -157,7 +157,7 @@ def train(cfg, writer, logger):
                 val_pred, val_true = [], []
 
                 with torch.no_grad():
-                    for i_val, (images_val, labels_val) in tqdm(enumerate(valloader)):
+                    for i_val, (images_val, labels_val) in tqdm(enumerate(valloader), total=len(valloader)):
                         images_val = images_val.to(device)
                         labels_val = labels_val.to(device)
 
@@ -242,6 +242,10 @@ if __name__ == "__main__":
 
     run_id = datetime.datetime.now().strftime("%m%d_%H%M")
     logdir = os.path.join("saves", run_id)
+
+    if os.path.exists(logdir):
+        raise Exception("log dir already exists")
+
     writer = SummaryWriter(log_dir=logdir)
 
     print("RUNDIR: {}".format(logdir))
