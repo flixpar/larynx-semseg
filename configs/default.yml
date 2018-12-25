@@ -8,18 +8,18 @@ data:
     img_rows: 480
     path: None
 training:
-    train_iters: 50000
+    train_iters: 5000
     batch_size: 32
-    val_interval: 250
-    n_workers: 12
-    print_interval: 100
+    val_interval: 25
+    n_workers: 32
+    print_interval: 10
     optimizer:
         name: "adam"
         lr: 8.0e-4
         weight_decay: 5.0e-3
     loss:
         name: "cross_entropy"
-        size_average: True
+        reduce: "mean"
         weight: [0.05, 1.0, 1.0]
     lr_schedule:
         name: "cosine_annealing"
