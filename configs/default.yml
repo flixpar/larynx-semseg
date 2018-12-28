@@ -15,7 +15,7 @@ training:
     print_interval: 100
     optimizer:
         name: "adam"
-        lr: 8.0e-4
+        lr: 1.0e-4
         weight_decay: 5.0e-3
     loss:
         name: "cross_entropy"
@@ -23,7 +23,7 @@ training:
         weight: [0.05, 1.0, 1.0]
     lr_schedule:
         name: "cosine_annealing"
-        T_max: 1500
+        T_max: 800
     augmentations:
         gamma: 0.25
         hue: 0.25
