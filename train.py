@@ -166,14 +166,14 @@ def train(cfg, writer, logger):
                         outputs = model(images_val)
                         val_loss = loss_fn(input=outputs, target=labels_val)
 
-                        pred = outputs.data.max(1)[1].cpu().numpy()
+                        pred = outputs.argmax(dim=1).cpu().numpy()
                         gt = labels_val.data.cpu().numpy()
 
                         running_metrics_val.update(gt, pred)
                         val_loss_meter.update(val_loss.item())
 
-                        val_pred.extend(outputs.cpu().numpy().tolist())
-                        val_true.extend(gt.tolist())
+                        val_pred.append(outputs.cpu().numpy())
+                        val_true.append(gt)
 
                 writer.add_scalar("loss/val_loss", val_loss_meter.avg, i + 1)
                 logger.info("Iter %d Loss: %.4f" % (i + 1, val_loss_meter.avg))
@@ -191,8 +191,9 @@ def train(cfg, writer, logger):
                 val_loss_meter.reset()
                 running_metrics_val.reset()
 
-                val_pred, val_true = np.asarray(val_pred), np.asarray(val_true)
-                metrics = compute_metrics(val_true, val_pred, num_classes=valloader.dataset.n_classes)
+                val_pred, val_true = np.asarray(val_pred).squeeze(), np.asarray(val_true).squeeze()
+                val_pred = val_pred.transpose((1, 0, 2, 3)).reshape(n_classes, -1)
+                metrics = compute_metrics(val_true, val_pred, num_classes=n_classes)
 
                 class_names = valloader.dataset.class_names
                 metric_table_names = ["iou", "precision", "recall", "dice_score", "f1"]
